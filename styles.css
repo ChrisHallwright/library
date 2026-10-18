@@ -1,12 +1,33 @@
-* {
+body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  display: grid;
+  grid-template-rows: 60px 1fr 30px;
+}
+
+div {
+  grid-row: 2 / 3;
+  display: flex;
 }
 
 form {
+  flex: 1;
   display: none;
 }
 
 form.active {
   display: grid;
   grid-template: repeat(5, 1fr) / 1fr 4fr;
+}
+
+form button {
+  width: 160px;
+}
+
+table {
+  flex: 1;
+}
+
+button.new {
+  grid-row: 3 / 4;
+  width: 80px;
 }
