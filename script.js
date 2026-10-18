@@ -16,6 +16,11 @@ function Book(title, author, pages, haveRead) {
     return `${this.title} by ${this.author}, ${this.pages} pages, ${read}. id: ${this.id}`;
   }
 
+  let delImg = document.createElement('img');
+  delImg.setAttribute('src', './assets/trash-bin-svgrepo-com.svg');
+  delImg.setAttribute('height', '16px');
+  delImg.setAttribute('alt', 'Delete row');
+
   this.display = function () {
     let row = document.createElement('tr');
     row.setAttribute('data-id', this.id);
@@ -30,9 +35,21 @@ function Book(title, author, pages, haveRead) {
       td.textContent = tableArray[i];
       row.appendChild(td);
     }
+    td = document.createElement('td');
+    let delBtn = document.createElement('button');
+    delBtn.setAttribute('type', 'button');
+    delBtn.appendChild(delImg);
+    delBtn.addEventListener('click', (e) => {
+      deleteBook(td.parentElement.dataset.id);
+      row.remove();
+    })
+    td.appendChild(delBtn);
+    row.appendChild(td);
+
     bookTableBody.appendChild(row);
   }
 }
+
 
 function addBookToLibrary(title, author, pages, haveRead) {
   const newBook = new Book(title, author, pages, haveRead);
@@ -85,3 +102,9 @@ const newBookButton = document.querySelector('.new');
 newBookButton.addEventListener('click', () => {
   form.classList.toggle('active');
 })
+
+function deleteBook(id) {
+  let countBefore = myLibrary.length;
+  ndx = myLibrary.findIndex(b => b.id === id);
+  myLibrary.splice(ndx, 1);
+}
