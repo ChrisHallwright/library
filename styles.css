@@ -1,22 +1,41 @@
-body {
+* {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
   display: grid;
   grid-template-rows: 60px 1fr 30px;
+  gap: 15px;
+}
+
+h1 {
+  background-color: white;
+  margin-top: 20px;
 }
 
 div {
   grid-row: 2 / 3;
   display: flex;
+  gap: 15px;
 }
 
 form {
   flex: 1;
   display: none;
+  background-color: bisque;
 }
 
 form.active {
   display: grid;
   grid-template: repeat(5, 1fr) / 1fr 4fr;
+  padding: 15px;
+}
+
+form input {
+  align-self: self-start;
+  justify-self: left;
 }
 
 form button {
@@ -25,9 +44,16 @@ form button {
 
 table {
   flex: 1;
+  background-color: lightskyblue;
+  padding: 15px;  
+  margin-right: 15px;
+}
+
+th {
+  text-align: left;
 }
 
 button.new {
   grid-row: 3 / 4;
-  width: 80px;
+  width: 120px;
 }
