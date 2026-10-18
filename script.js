@@ -55,7 +55,9 @@ function displayBooks() {
 
 displayBooks();
 
+const form = document.querySelector('form');
 const submit = document.querySelector('form button');
+
 submit.addEventListener('click', (e) => {
   const title = document.querySelector('#title');
   const author = document.querySelector('#author');
@@ -69,6 +71,7 @@ submit.addEventListener('click', (e) => {
     title.value, author.value, pages.value, haveRead.checked);
 
   newBook.display();
+  form.classList.remove('active');
 
   title.value = '';
   author.value = '';
@@ -76,4 +79,9 @@ submit.addEventListener('click', (e) => {
   haveRead.checked = false;
 
   e.preventDefault();
+})
+
+const newBookButton = document.querySelector('.new');
+newBookButton.addEventListener('click', () => {
+  form.classList.toggle('active');
 })
