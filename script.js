@@ -24,27 +24,35 @@ function Book(title, author, pages, haveRead) {
   this.display = function () {
     let row = document.createElement('tr');
     row.setAttribute('data-id', this.id);
-    let tableArray = [
+
+    let colArray = [
       this.title,
       this.author,
       this.pages,
       this.haveRead ? 'Yes' : 'no']
     let td;
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < colArray.length; i++) {
       td = document.createElement('td');
-      td.textContent = tableArray[i];
+      td.textContent = colArray[i];
       row.appendChild(td);
     }
+
+    // Append delete button per book display row
     td = document.createElement('td');
+
     let delBtn = document.createElement('button');
     delBtn.setAttribute('type', 'button');
     delBtn.appendChild(delImg);
     delBtn.addEventListener('click', (e) => {
-      deleteBook(td.parentElement.dataset.id);
-      row.remove();
+      if (window.confirm('Are you sure you want to DELETE this book?')) {
+        deleteBook(td.parentElement.dataset.id);
+        row.remove();
+      }
     })
     td.appendChild(delBtn);
+
     row.appendChild(td);
+    // ------------------------------------------
 
     bookTableBody.appendChild(row);
   }
