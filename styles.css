@@ -45,12 +45,16 @@ form button {
 table {
   flex: 1;
   background-color: lightskyblue;
-  padding: 15px;  
+  padding: 15px;
   margin-right: 15px;
 }
 
-table button {
-  
+table button.del-btn {
+  background-color: lightsalmon;
+}
+
+table button.read-toggle-btn {
+  background-color: lightgreen;
 }
 
 th {

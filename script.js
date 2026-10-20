@@ -43,13 +43,35 @@ function Book(title, author, pages, haveRead) {
     let delBtn = document.createElement('button');
     delBtn.setAttribute('type', 'button');
     delBtn.appendChild(delImg);
+    delBtn.classList.add('del-btn');
     delBtn.addEventListener('click', (e) => {
-      if (window.confirm('Are you sure you want to DELETE this book?')) {
+      if (window.confirm(`Are you sure you want to DELETE "${this.title}"`)) {
         deleteBook(td.parentElement.dataset.id);
         row.remove();
       }
     })
     td.appendChild(delBtn);
+
+    row.appendChild(td);
+    // ------------------------------------------
+
+    // Append haveRead toggle button per book display row
+    td = document.createElement('td');
+
+    let readToggleBtn = document.createElement('button');
+    readToggleBtn.setAttribute('type', 'button');
+    readToggleBtn.textContent = 'Switch read status';
+    readToggleBtn.classList.add('read-toggle-btn');
+    readToggleBtn.addEventListener('click', (e) => {
+      if (this.haveRead) {
+        this.haveRead = false;
+        row.children.item(3).textContent = 'no';
+      } else {
+        this.haveRead = true;
+        row.children.item(3).textContent = 'Yes';
+      }
+    })
+    td.appendChild(readToggleBtn);
 
     row.appendChild(td);
     // ------------------------------------------
