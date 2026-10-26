@@ -1,27 +1,22 @@
 const myLibrary = [];
 const bookTableBody = document.querySelector('tbody');
 
-function Book(title, author, pages, haveRead) {
-  if (!new.target) {
-    throw Error('You must use the "new" operator when calling this constructor function');
-  }
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.haveRead = haveRead;
-  this.id = crypto.randomUUID();
+class Book {
 
-  this.info = function () {
+  constructor(title, author, pages, haveRead) {
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.haveRead = haveRead;
+    this.id = crypto.randomUUID();
+  }
+
+  info() {
     const read = (this.haveRead) ? 'read already' : 'not read yet';
     return `${this.title} by ${this.author}, ${this.pages} pages, ${read}. id: ${this.id}`;
   }
 
-  let delImg = document.createElement('img');
-  delImg.setAttribute('src', './assets/trash-bin-svgrepo-com.svg');
-  delImg.setAttribute('height', '16px');
-  delImg.setAttribute('alt', 'Delete row');
-
-  this.display = function () {
+  display() {
     let row = document.createElement('tr');
     row.setAttribute('data-id', this.id);
 
@@ -39,6 +34,11 @@ function Book(title, author, pages, haveRead) {
 
     // Append delete button per book display row
     td = document.createElement('td');
+
+    let delImg = document.createElement('img');
+    delImg.setAttribute('src', './assets/trash-bin-svgrepo-com.svg');
+    delImg.setAttribute('height', '16px');
+    delImg.setAttribute('alt', 'Delete row');
 
     let delBtn = document.createElement('button');
     delBtn.setAttribute('type', 'button');

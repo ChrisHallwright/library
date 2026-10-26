@@ -64,4 +64,9 @@ th {
 button.new {
   grid-row: 3 / 4;
   width: 120px;
+  background-color:dodgerblue;
+  color: white;
+  border-radius: 8px;
+  border-style: none;
+  font-weight: 700;
 }
