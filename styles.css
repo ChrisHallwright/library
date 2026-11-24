@@ -2,6 +2,7 @@
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 
 body {
@@ -29,8 +30,17 @@ form {
 
 form.active {
   display: grid;
-  grid-template: repeat(5, 1fr) / 1fr 4fr;
+  grid-template: repeat(5, 1fr);
   padding: 15px;
+}
+
+label {
+  display: grid;
+  grid-template: 1fr 1fr / 96px 1fr;
+}
+
+label span.error {
+  grid-column: 1 / 3;
 }
 
 form input {
@@ -43,7 +53,7 @@ form button {
 }
 
 table {
-  flex: 1;
+  flex: 2;
   background-color: lightskyblue;
   padding: 15px;
   margin-right: 15px;
@@ -70,3 +80,19 @@ button.new {
   border-style: none;
   font-weight: 700;
 }
+
+p span.error {
+  display: block;
+  color: red;
+  font-size:small;
+  margin-left: 15px;
+}
+
+input:user-invalid {
+  background-color: red;
+  color: white;
+}
+
+input:user-valid {
+  background-color: lightgreen;
+  color: black;
