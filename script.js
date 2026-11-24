@@ -95,8 +95,8 @@ addBookToLibrary('Sand Talk', 'Tyson Yunkaporta', 280, true);
 addBookToLibrary('Patterns of Commoning', 'The Commons Strategies Group', 336, false);
 
 function displayBooks() {
-  for (let i = 0; i < myLibrary.length; i++) {
-    myLibrary[i].display();
+  for (let book of myLibrary) {
+    book.display();
   }
 }
 
@@ -131,6 +131,11 @@ submit.addEventListener('click', (e) => {
 const newBookButton = document.querySelector('.new');
 newBookButton.addEventListener('click', () => {
   form.classList.toggle('active');
+  if (form.classList.contains('active')) {
+    newBookButton.textContent = 'Cancel';
+  } else {
+    newBookButton.textContent = 'New book';
+  }
 })
 
 function deleteBook(id) {
