@@ -101,54 +101,6 @@ function displayBooks() {
 }
 
 displayBooks();
-
-const form = document.querySelector('form');
-const submit = document.querySelector('form button');
-
-submit.addEventListener('click', (e) => {
-
-  e.preventDefault();
-  
-  const title = document.querySelector('#title');
-  const author = document.querySelector('#author');
-  const pages = document.querySelector('#pages');
-  const haveRead = document.querySelector('#have_read');
-  if (!title.value || !author.value || !pages.value) {
-    alert('Please complete the book details before adding');
-    return;
-  }
-  let newBook = addBookToLibrary(
-    title.value, author.value, pages.value, haveRead.checked);
-
-  newBook.display();
-  form.classList.remove('active');
-
-  title.value = '';
-  author.value = '';
-  pages.value = ''
-  haveRead.checked = false;
-
-  const newBookButton = document.querySelector('.new');
-  newBookButton.textContent = 'New book';
-
-})
-
-const newBookButton = document.querySelector('.new');
-newBookButton.addEventListener('click', () => {
-  form.classList.toggle('active');
-  if (form.classList.contains('active')) {
-    newBookButton.textContent = 'Cancel';
-  } else {
-    newBookButton.textContent = 'New book';
-  }
-})
-
-function deleteBook(id) {
-  let countBefore = myLibrary.length;
-  ndx = myLibrary.findIndex(b => b.id === id);
-  myLibrary.splice(ndx, 1);
-}
-
 // ========================================================================= //
 class InputValidation {
 
@@ -203,8 +155,7 @@ class InputValidation {
           }
         }
       }
-      // Add the `active` error class
-      this.errorFld.className = "error active";
+      this.errorFld.classList.add('active');
     }
 
     InputValidation.formMap.set(selector, this);
@@ -214,56 +165,54 @@ class InputValidation {
         this.customValidation();
       }
       if (event.target.validity.valid) {
-        this.errorFld.textContent = ""; // Remove the message content
-        this.errorFld.className = "error"; // Removes the `active` class
+        this.errorFld.textContent = '';
+        this.errorFld.classList.remove('active');
       } else {
-        // If there is an error, show the correct message
         this.showError();
       }
     });
 
   }
 
-  /*
-    static {
-      const form = document.querySelector("form");
-      form.addEventListener("submit", (event) => {
-        for (const input of formMap.values()) {
-          if (!input.fld.validity.valid) {
-            // display an appropriate error message
-            input.showError();
-            // prevent form submission
-            event.preventDefault();
-          }
-        }
-      });
+  static formValidate = function () {
+    // use within form submit event listener
+    let rslt = true;
+    for (const input of this.formMap.values()) {
+      if (input.fld.validity.valid) {
+        input.errorFld.classList.remove('active');
+      } else {
+        input.showError();
+        // Caller can use rslt to prevent form submission actions
+        rslt = false;
+      }
     }
-   */
+    return rslt;
+  }
+
   // Non-standard messages and validation
 
-  /*   static setOverrideMsg = function (selector, eCode, msg) {
-      // usage example
-      //  InputValidation.setOverrideMsg('#postcode', 'patternMismatch', 'Postcode must be 4 numeric digits');
-      const input = formMap.get(selector);
-      input.overrideMsgs.set(eCode, msg);
-    }
-  
-    static repeatFieldMatch = function (firstFieldSelector, secondFieldSelector, eMsg) {
-      // usage example
-      //  InputValidation.repeatFieldMatch('#password', '#repeat-pw', `Passwords don't match`);
-      const f1 = formMap.get(firstFieldSelector).fld;
-      const f2Inp = formMap.get(secondFieldSelector);
-      const f2 = f2Inp.fld;
-      f2Inp.customValidation = function () {
-        if (f2.value === f1.value) {
-          f2.setCustomValidity('');
-        } else {
-          f2.setCustomValidity(eMsg);
-        }
-      };
-      setOverrideMsg(secondFieldSelector, 'customError', eMsg);
-    }
-   */
+  static setOverrideMsg = function (selector, eCode, msg) {
+    // usage example
+    //  InputValidation.setOverrideMsg('#postcode', 'patternMismatch', 'Postcode must be 4 numeric digits');
+    const input = this.formMap.get(selector);
+    input.overrideMsgs.set(eCode, msg);
+  }
+
+  static repeatFieldMatch = function (firstFieldSelector, secondFieldSelector, eMsg) {
+    // usage example
+    //  InputValidation.repeatFieldMatch('#password', '#repeat-pw', `Passwords don't match`);
+    const f1 = this.formMap.get(firstFieldSelector).fld;
+    const f2Inp = this.formMap.get(secondFieldSelector);
+    const f2 = f2Inp.fld;
+    f2Inp.customValidation = function () {
+      if (f2.value === f1.value) {
+        f2.setCustomValidity('');
+      } else {
+        f2.setCustomValidity(eMsg);
+      }
+    };
+    this.setOverrideMsg(secondFieldSelector, 'customError', eMsg);
+  }
 }
 
 function titleise(text) {
@@ -278,3 +227,52 @@ function titleise(text) {
 let x = new InputValidation('#title', 'Book title', 'input');
 x = new InputValidation('#author', 'Author', 'input');
 x = new InputValidation('#pages', 'Number of pages');
+
+const form = document.querySelector('form');
+const submit = document.querySelector('form button');
+
+submit.addEventListener('click', (e) => {
+
+  e.preventDefault();
+
+  if (!InputValidation.formValidate()) {
+    return;
+  }
+
+  const title = document.querySelector('#title');
+  const author = document.querySelector('#author');
+  const pages = document.querySelector('#pages');
+  const haveRead = document.querySelector('#have_read');
+
+  let newBook = addBookToLibrary(
+    title.value, author.value, pages.value, haveRead.checked);
+
+  newBook.display();
+  form.classList.remove('active');
+
+  title.value = '';
+  author.value = '';
+  pages.value = ''
+  haveRead.checked = false;
+
+  const newBookButton = document.querySelector('.new');
+  newBookButton.textContent = 'New book';
+
+})
+
+const newBookButton = document.querySelector('.new');
+newBookButton.addEventListener('click', () => {
+  form.classList.toggle('active');
+  if (form.classList.contains('active')) {
+    newBookButton.textContent = 'Cancel';
+  } else {
+    newBookButton.textContent = 'New book';
+  }
+})
+
+function deleteBook(id) {
+  let countBefore = myLibrary.length;
+  ndx = myLibrary.findIndex(b => b.id === id);
+  myLibrary.splice(ndx, 1);
+}
+

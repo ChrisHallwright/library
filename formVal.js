@@ -8,6 +8,7 @@ class InputValidation {
 
     this.fld = document.querySelector(selector);
     this.errorFld = document.querySelector(`${selector} + span.error`);
+    this.errorFld.classList.remove('active');
     if (fldTitle) {
       this.fldTitle = fldTitle;
     } else {
@@ -51,8 +52,7 @@ class InputValidation {
           }
         }
       }
-      // Add the `active` error class
-      this.errorFld.className = "error active";
+      this.errorFld.classList.add('active');
     }
 
     InputValidation.formMap.set(selector, this);
@@ -63,28 +63,34 @@ class InputValidation {
       }
 
       if (event.target.validity.valid) {
-        this.errorFld.textContent = ""; // Remove the message content
-        this.errorFld.className = "error"; // Removes the `active` class
+        this.errorFld.textContent = '';
+        this.errorFld.classList.remove('active');
       } else {
-        // If there is an error, show the correct message
         this.showError();
       }
     });
 
   }
 
-  static {
-    const form = document.querySelector("form");
-    form.addEventListener("submit", (event) => {
-      for (const input of formMap.values()) {
-        if (!input.fld.validity.valid) {
-          // display an appropriate error message
-          input.showError();
-          // prevent form submission
-          event.preventDefault();
-        }
+  static formValidate = function () {
+    // use within form submit event listener
+    //  e.g.
+    /*  if (!InputValidation.formValidate()) {
+          e.preventDefault();
+          return;
+        } 
+    */
+    let rslt = true;
+    for (const input of this.formMap.values()) {
+      if (input.fld.validity.valid) {
+        input.errorFld.classList.remove('active');
+      } else {
+        input.showError();
+        // Caller can use rslt to prevent form submission
+        rslt = false;
       }
-    });
+    }
+    return rslt;
   }
 
   // Non-standard messages and validation
@@ -92,15 +98,15 @@ class InputValidation {
   static setOverrideMsg = function (selector, eCode, msg) {
     // usage example
     //  InputValidation.setOverrideMsg('#postcode', 'patternMismatch', 'Postcode must be 4 numeric digits');
-    const input = formMap.get(selector);
+    const input = this.formMap.get(selector);
     input.overrideMsgs.set(eCode, msg);
   }
 
   static repeatFieldMatch = function (firstFieldSelector, secondFieldSelector, eMsg) {
     // usage example
     //  InputValidation.repeatFieldMatch('#password', '#repeat-pw', `Passwords don't match`);
-    const f1 = formMap.get(firstFieldSelector).fld;
-    const f2Inp = formMap.get(secondFieldSelector);
+    const f1 = this.formMap.get(firstFieldSelector).fld;
+    const f2Inp = this.formMap.get(secondFieldSelector);
     const f2 = f2Inp.fld;
     f2Inp.customValidation = function () {
       if (f2.value === f1.value) {
@@ -109,7 +115,7 @@ class InputValidation {
         f2.setCustomValidity(eMsg);
       }
     };
-    setOverrideMsg(secondFieldSelector, 'customError', eMsg);
+    this.setOverrideMsg(secondFieldSelector, 'customError', eMsg);
   }
 
 }
