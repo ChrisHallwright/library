@@ -1,0 +1,114 @@
+class Input {
+  constructor(selector, fldTitle = '') {
+    this.fld = document.querySelector(selector);
+    this.errorFld = document.querySelector(`${selector} + span.error`);
+    this.fldTitle = fldTitle;
+
+    this.lowerTitle = function () {
+      return fldTitle.toLowerCase();
+    };
+
+    this.indefArticleTitle = function () {
+      if ('aeiou'.includes(this.lowerTitle()[0])) {
+        return `an ${this.lowerTitle()}`;
+      } else {
+        return `a ${this.lowerTitle()}`;
+      }
+    };
+
+    this.overrideMsgs = new Map();
+    this.customValidation = false;
+  }
+}
+
+const msgs = (inp) => ({
+  'valueMissing': `You need to enter ${inp.indefArticleTitle()}.`,
+  'typeMismatch': `Entered value needs to be an ${inp.fld['type']} address.`,
+  'patternMismatch': `Entered ${inp.lowerTitle()} doen't match its required pattern.`,
+  'tooShort': `${inp.fldTitle} should be at least ${inp.fld.minLength} characters; you entered ${inp.fld.value.length}.`,
+  'tooLong': `${inp.fldTitle} should be no more than ${inp.fld.maxLength} characters; you entered ${inp.fld.value.length}.`,
+  'rangeUnderflow': `${inp.fldTitle} should be at least ${inp.fld.min}; you entered ${inp.fld.value}.`,
+  'rangeOverflow': `${inp.fldTitle} should be no more than ${inp.fld.max}; you entered ${inp.fld.value}.`,
+  'customError': ''
+});
+
+let formInputs = new Map();
+
+function configureInputValidation(selector, fieldTitle, listenEvent) {
+  formInputs.set(selector, new Input(selector, fieldTitle));
+  const input = formInputs.get(selector);
+
+  input.fld.addEventListener(listenEvent, (event) => {
+    if (input.customValidation) {
+      input.customValidation();
+    }
+
+    if (input.fld.validity.valid) {
+      input.errorFld.textContent = ""; // Remove the message content
+      input.errorFld.className = "error"; // Removes the `active` class
+    } else {
+      // If there is an error, show the correct message
+      showError(input);
+    }
+  });
+}
+
+// usage
+configureInputValidation('#mail', 'Email address', 'change');
+
+const form = document.querySelector("form");
+form.addEventListener("submit", (event) => {
+  for (let input of formInputs.values()) {
+    if (!input.fld.validity.valid) {
+      // display an appropriate error message
+      showError(input);
+      // prevent form submission
+      event.preventDefault();
+    }
+  }
+});
+
+function showError(input) {
+  for (condition in input.fld.validity) {
+    if (input.fld.validity[condition]) {
+      if (input.overrideMsgs.has(condition)) {
+        input.errorFld.textContent = input.overrideMsgs.get(condition);
+      } else {
+        input.errorFld.textContent = msgs(input)[condition];
+      }
+    }
+  }
+  // Add the `active` error class
+  input.errorFld.className = "error active";
+}
+
+// Non-standard messages and validation
+
+function setOverrideMsg(selector, eCode, msg) {
+  const input = formInputs.get(selector);
+  input.overrideMsgs.set(eCode, msg);
+}
+
+function repeatFieldMatch(firstFieldSelector, secondFieldSelector, eMsg) {
+  const f1 = formInputs.get(firstFieldSelector).fld;
+  const f2Inp = formInputs.get(secondFieldSelector);
+  const f2 = f2Inp.fld;
+  f2Inp.customValidation = function () {
+    if (f2.value === f1.value) {
+      f2.setCustomValidity('');
+    } else {
+      f2.setCustomValidity(eMsg);
+    }
+  };
+  setOverrideMsg(secondFieldSelector, 'customError', eMsg);
+}
+
+// usage
+setOverrideMsg('#postcode', 'patternMismatch', 'Postcode must be 4 numeric digits');
+
+// usage
+repeatFieldMatch('#password', '#repeat-pw', `Passwords don't match`);
+
+
+
+export {configureInputValidation, setOverrideMsg, repeatFieldMatch}
